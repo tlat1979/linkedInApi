@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "linkedin-private-api": "^1.1.2",
+    "linkedin-web-api": "^1.0.4"
+  }
+}
