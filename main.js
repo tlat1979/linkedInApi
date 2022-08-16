@@ -1,145 +1,34 @@
-var Client = require('linkedin-private-api');
-var fs = require('fs');
-var nconf = require('nconf');
-var client;
+const LinkedIn = require("./linkedinAPI.js");
 
-var connect = async _ => {
+const main = async _ => {
 
-    nconf.file({ file: './config.json' });
+    var linkedIn = new LinkedIn();
+    await linkedIn.connect();
 
-    const username = nconf.get('username');
-    const password = nconf.get('password');
+    //var filters =  { currentCompany: "", pastCompany: "", company: "", geoUrn: "", industry: "", network: "", profileLanguage: "", school: "", connectionOf: "", contactInterest: "", serviceCategory: "", firstName: "", lastName: "", title: ""}
+    var ppl = await linkedIn.searchPeople("" ,{firstName: "Rami"}, 20);   //(keywords, filters, limit)
 
-    client = new Client.Client();
-    await client.login.userPass({ username, password });
-} 
+    var matanProfile = await linkedIn.getProfile("Matan Nataf");
 
-var sendInvitationWithMessage = async (name, message = "") => {
+    var recivedInvitations = await linkedIn.getRecivedInvitations();  
 
-    const peopleScroller = client.search.searchPeople({ keywords: name });
-    const user = (await peopleScroller.scrollNext())[0];
-    const userFullProfile = await client.profile.getProfile({ publicIdentifier: user.profile.publicIdentifier });
-    
-    await client.invitation.sendInvitation({
-        profileId: user.profile.profileId,
-        trackingId: user.trackingId,
-        message: message
-    });
-}
+    var sentInvitations = await linkedIn.getSentInvitations();
 
-var getMyProfile = async _ => await client.profile.getOwnProfile();
+    var myProfile = await linkedIn.getMyProfile();
 
-var searchJobs = async (keywords, location = "Israel", limit = 20, skip = 0) => {
-    const jobsScroller = await client.search.searchJobs({
-        keywords: keywords,
-        filters: { location: location },
-        limit: limit,
-        skip: skip,
-    });
-    
-    const [jobHit] = await jobsScroller.scrollNext();
-    const jobHitCompanyHit = jobHit.hitInfo.jobPosting.companyDetails.company.name;
-    
-    return jobHit;
-}
+    var invitation = await linkedIn.sendInvitationWithMessage("Bar Shknevsky", "Hi Bar");
 
-var searchCompanies = async companyName => {
-    const companiesScroller = await client.search.searchCompanies({ keywords: companyName });
-    const [{ company: company }] = await companiesScroller.scrollNext();
-    return company;
-}
+    var jobs = await linkedIn.searchJobs("Software Engineer");
 
-var searchMyConnections = async (keywords, limit = 1) => {
-    const ownConnectionsScroller = await client.search.searchOwnConnections({ keywords: keywords, limit: limit });
-    return ownConnectionsScroller.scrollNext();  
-}
+    var companies = await linkedIn.searchCompanies("Wiz");
 
-var getConversation = async keywords => {
-    const peopleScroller = await client.search.searchPeople({
-        keywords: keywords
-    });
-    const [{ profile: user }] = await peopleScroller.scrollNext();
+    var connection = await linkedIn.searchMyConnections("sabo taylor diab");
 
-    const [userCoversation] = await client.conversation.getConversations({
-        recipients: user.profileId
-      }).scrollNext();
-     
-    const conversationMessages = await client.message.getMessages({
-        conversationId: userCoversation.conversationId
-    }).scrollNext()
+    var conversation = await linkedIn.getConversation("Ran Zaslavsky");
 
-      return conversationMessages;
-}
+    var msg = await linkedIn.sendMessage("Ran Zaslavsky", "Thanks!")
 
-var getAllMesseges = async _ => {
-    const conversationScroller = client.conversation.getConversations();
-    const conversations = await conversationScroller.scrollNext();
-    var msgs = [];
-
-    for (i = 0; i < conversations.length; i++) {
-        var messagesScroller = client.message.getMessages({ conversationId: conversations[i].conversationId });
-        msgs.push(await messagesScroller.scrollNext());
-    }
-
-    return msgs;
-}
-
-const sendMessage = async (keywords, text) => {
-    const peopleScroller = await client.search.searchPeople({
-        keywords: keywords
-    });
-    const [{ profile: user }] = await peopleScroller.scrollNext();
-
-    return await client.message.sendMessage({
-        profileId: user.profileId,
-        text: text,
-    });
-}
-
-var getSentInvitations = async _ => {
-    const sentScroller = client.invitation.getSentInvitations();
-    return await sentScroller.scrollNext();
-}
-
-var getRecivedInvitations = async _ => {
-    const receivedScroller = client.invitation.getReceivedInvitations();
-    return await receivedScroller.scrollNext();
-}
-
-var getProfile = async keywords => {
-    const peopleScroller = await client.search.searchPeople({
-        keywords: keywords,
-    });
-    const [{ profile: profile }] = await peopleScroller.scrollNext();
-    const fullProfile = await client.profile.getProfile({ publicIdentifier: profile.publicIdentifier });
-    return fullProfile;
-}
-    
-
-var main = async _ => {
-    await connect();
-
-    var matanPrifile = await getProfile("Matan Nataf");
-
-    var recivedInvitations = await getRecivedInvitations();  
-
-    var sentInvitatiosn = await getSentInvitations();
-
-    var myProfile = await getMyProfile();
-
-    var invitation = await sendInvitationWithMessage("Bar Shknevsky", "Hi Bar");
-
-    var jobs = await searchJobs("Software Engineer");
-
-    var companies = await searchCompanies("Wiz");
-
-    var connection = await searchMyConnections("sabo taylor diab");
-
-    var conversation = await getConversation("Ran Zaslavsky");
-
-    var msg = await sendMessage("Ran Zaslavsky", "Thanks!")
-
-    var allMesseges = await getAllMesseges()
+    var allMesseges = await linkedIn.getAllMesseges()
 
     console.log(myProfile);
 }
