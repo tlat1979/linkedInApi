@@ -6,7 +6,7 @@ const main = async _ => {
     await linkedIn.connect();
 
     //var filters =  { currentCompany: "", pastCompany: "", company: "", geoUrn: "", industry: "", network: "", profileLanguage: "", school: "", connectionOf: "", contactInterest: "", serviceCategory: "", firstName: "", lastName: "", title: ""}
-    var ppl = await linkedIn.searchPeople("" ,{firstName: "Rami"}, 20);   //(keywords, filters, limit)
+    var ppl = await linkedIn.searchPeople("" ,{firstName: "Rami"}, 2);   //(keywords, filters, limit)
 
     var matanProfile = await linkedIn.getProfile("Matan Nataf");
 

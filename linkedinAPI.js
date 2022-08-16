@@ -103,7 +103,7 @@ class LinkedIn {
         const conversations = await conversationScroller.scrollNext();
         var msgs = [];
 
-        for (i = 0; i < conversations.length; i++) {
+        for (let i = 0; i < conversations.length; i++) {
             var messagesScroller = client.message.getMessages({ conversationId: conversations[i].conversationId });
             msgs.push(await messagesScroller.scrollNext());
         }
