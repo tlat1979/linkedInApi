@@ -1,5 +1,7 @@
 {
   "dependencies": {
+    "axios": "^0.27.2",
+    "hubspot": "^2.3.14",
     "linkedin-private-api": "^1.1.2",
     "linkedin-web-api": "^1.0.4",
     "nconf": "^0.12.0"
