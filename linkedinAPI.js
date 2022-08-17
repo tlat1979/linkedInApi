@@ -3,9 +3,7 @@ var fs = require('fs');
 var nconf = require('nconf');
 var client;
 
-class LinkedIn {
-
-    connect = async _ => {
+    const connectLinkedIn = async _ => {
 
         nconf.file({ file: './config.json' });
 
@@ -14,13 +12,29 @@ class LinkedIn {
 
         client = new Client.Client();
         await client.login.userPass({ username, password });
+        var a = 5;
     } 
 
-    searchPeople = async (keywords = "", filters = {}, limit = 10) => {
-        //var filters =  { currentCompany: "", pastCompany: "", company: "", geoUrn: "", industry: "", network: "", profileLanguage: "", school: "", connectionOf: "", contactInterest: "", serviceCategory: "", firstName: "", lastName: "", title: ""}
+    const searchPeople = async (keywords = "", filters = {}, limit = 10) => {
+        
+        var searchFilters =  {};
+        searchFilters["currentCompany"] =   filters["currentCompany"] ? filters["currentCompany"] : "";
+        searchFilters["pastCompany"] =      filters["pastCompany"] ? filters["pastCompany"] : "";
+        searchFilters["company"] =          filters["company"] ? filters["company"] : "";
+        searchFilters["geoUrn"] =           filters["geoUrn"] ? filters["geoUrn"] : "";
+        searchFilters["industry"] =         filters["industry"] ? filters["industry"] : "";
+        searchFilters["network"] =          filters["network"] ? filters["network"] : "";
+        searchFilters["profileLanguage"] =  filters["profileLanguage"] ? filters["profileLanguage"] : "";
+        searchFilters["school"] =           filters["school"] ? filters["school"] : "";
+        searchFilters["contactInterest"] =  filters["contactInterest"] ? filters["contactInterest"] : "";
+        searchFilters["serviceCategory"] =  filters["serviceCategory"] ? filters["serviceCategory"] : "";
+        searchFilters["firstName"] =        filters["firstName"] ? filters["firstName"] : "";
+        searchFilters["lastName"] =         filters["lastName"] ? filters["lastName"] : "";
+        searchFilters["title"] =            filters["title"] ? filters["title"] : "";
+             
         const peopleScroller = client.search.searchPeople({ 
             keywords: keywords,
-            filters: filters,
+            filters: searchFilters,
             limit: limit
         });
     
@@ -41,7 +55,7 @@ class LinkedIn {
         return users;
     }
 
-    sendInvitationWithMessage = async (name, message = "") => {
+    const sendInvitationWithMessage = async (name, message = "") => {
 
         const peopleScroller = client.search.searchPeople({ keywords: name });
         const user = (await peopleScroller.scrollNext())[0];
@@ -54,9 +68,9 @@ class LinkedIn {
         });
     }
 
-    getMyProfile = async _ => await client.profile.getOwnProfile();
+    const getMyProfile = async _ => await client.profile.getOwnProfile();
 
-    searchJobs = async (keywords, location = "Israel", limit = 20, skip = 0) => {
+    const searchJobs = async (keywords, location = "Israel", limit = 20, skip = 0) => {
         const jobsScroller = await client.search.searchJobs({
             keywords: keywords,
             filters: { location: location },
@@ -70,18 +84,17 @@ class LinkedIn {
         return jobHit;
     }
 
-    searchCompanies = async companyName => {
+    const searchCompanies = async companyName => {
         const companiesScroller = await client.search.searchCompanies({ keywords: companyName });
-        const [{ company: company }] = await companiesScroller.scrollNext();
-        return company;
+       return await companiesScroller.scrollNext();
     }
 
-    searchMyConnections = async (keywords, limit = 1) => {
+    const searchMyConnections = async (keywords, limit = 1) => {
         const ownConnectionsScroller = await client.search.searchOwnConnections({ keywords: keywords, limit: limit });
         return ownConnectionsScroller.scrollNext();  
     }
 
-    getConversation = async keywords => {
+    const getConversation = async keywords => {
         const peopleScroller = await client.search.searchPeople({
             keywords: keywords
         });
@@ -98,7 +111,7 @@ class LinkedIn {
         return conversationMessages;
     }
 
-    getAllMesseges = async _ => {
+    const getAllMesseges = async _ => {
         const conversationScroller = client.conversation.getConversations();
         const conversations = await conversationScroller.scrollNext();
         var msgs = [];
@@ -111,7 +124,7 @@ class LinkedIn {
         return msgs;
     }
 
-    sendMessage = async (keywords, text) => {
+    const sendMessage = async (keywords, text) => {
         const peopleScroller = await client.search.searchPeople({
             keywords: keywords
         });
@@ -123,17 +136,17 @@ class LinkedIn {
         });
     }
 
-    getSentInvitations = async _ => {
+    const getSentInvitations = async _ => {
         const sentScroller = client.invitation.getSentInvitations();
         return await sentScroller.scrollNext();
     }
 
-    getRecivedInvitations = async _ => {
+    const getRecivedInvitations = async _ => {
         const receivedScroller = client.invitation.getReceivedInvitations();
         return await receivedScroller.scrollNext();
     }
 
-    getProfile = async keywords => {
+    const getProfile = async keywords => {
         const peopleScroller = await client.search.searchPeople({
             keywords: keywords,
         });
@@ -141,6 +154,19 @@ class LinkedIn {
         const fullProfile = await client.profile.getProfile({ publicIdentifier: profile.publicIdentifier });
         return fullProfile;
     }
-}
 
-module.exports = LinkedIn
+module.exports = {
+    connectLinkedIn: connectLinkedIn,
+    searchPeople: searchPeople,
+    sendInvitationWithMessage: sendInvitationWithMessage,
+    getMyProfile: getMyProfile,
+    searchJobs: searchJobs,
+    searchCompanies: searchCompanies,
+    searchMyConnections: searchMyConnections,
+    getConversation: getConversation,
+    getAllMesseges: getAllMesseges,
+    sendMessage: sendMessage,
+    getSentInvitations: getSentInvitations,
+    getRecivedInvitations: getRecivedInvitations,
+    getProfile: getProfile
+}

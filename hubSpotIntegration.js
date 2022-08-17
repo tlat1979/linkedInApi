@@ -35,25 +35,25 @@ class HubSpotAPI {
     }
 }
 
-const main = async _ => {
-    var hubSpotAPI = new HubSpotAPI();
-    var contactData = {
-        firstName: "Rannnnnnnn",
-        lastName: "Zamirrrrrrrrr",
-        email: "rannnnn@zamirr.com",
-        company: "Zamirr LTD",
-        phone: "0546688777"
-    }
-    //var contact = await hubSpotAPI.createContact(contactData);
-    var g = 6;
-
-    var companyData = {
-        name: "XXXXXX Company",
-        description: "Fly to sapce and back",
-    }
-    var company = await hubSpotAPI.createCompany(companyData);
-    var d = 5;
-}
+module.exports = HubSpotAPI
 
 
-main();
+// const main = async _ => {
+//     var hubSpotAPI = new HubSpotAPI();
+//     var contactData = {
+//         firstName: "Rannnnnnnn",
+//         lastName: "Zamirrrrrrrrr",
+//         email: "rannnnn@zamirr.com",
+//         company: "Zamirr LTD",
+//         phone: "0546688777"
+//     }
+//     //var contact = await hubSpotAPI.createContact(contactData);
+//     var g = 6;
+
+//     var companyData = {
+//         name: "XXXXXX Company",
+//         description: "Fly to sapce and back",
+//     }
+//     var company = await hubSpotAPI.createCompany(companyData);
+//     var d = 5;
+// }
