@@ -45,7 +45,7 @@ var client;
                 const user = (await peopleScroller.scrollNext())[i];
                 if (!user) break;
                 if (client && client.profile && user && user.profile) {
-                    console.log(user.profile.firstName + " " + user.profile.lastName);
+                    //console.log(user.profile.firstName + " " + user.profile.lastName);
                     const userFullProfile = await client.profile.getProfile({ publicIdentifier: user.profile.publicIdentifier });
                     users.push(userFullProfile);
                 } else continue;
@@ -65,8 +65,19 @@ var client;
             profileId: user.profile.profileId,
             trackingId: user.trackingId,
             message: message
+        }); 
+    }
+
+    const sendInvitationWithMessageById = async (profileId, trackingId, message, skip = 0) => {
+        
+        await client.invitation.sendInvitation({
+            profileId: profileId,
+            trackingId: trackingId,
+            message: message,
+            skip: skip
         });
     }
+    
 
     const getMyProfile = async _ => await client.profile.getOwnProfile();
 
@@ -168,5 +179,6 @@ module.exports = {
     sendMessage: sendMessage,
     getSentInvitations: getSentInvitations,
     getRecivedInvitations: getRecivedInvitations,
-    getProfile: getProfile
+    getProfile: getProfile,
+    sendInvitationWithMessageById: sendInvitationWithMessageById,
 }

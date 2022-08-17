@@ -1,5 +1,8 @@
 const linkedIn = require("./linkedinAPI.js");
 const HubSpot = require("./hubSpotIntegration.js");
+const { LinkedInContractInterest } = require("linkedin-private-api");
+
+var msg = " how are you? If you are using AWS RDS Postgres on a large scale today, I would love to connect. Our solution might help to accelerate your performance & lower your costs. Is that relevant? P.S-Are you coming to the AWS summit in Anaheim? If so, I would love to meet."
 
 
 
@@ -19,12 +22,23 @@ const findPeopleAndConnect = async _ => {
     await linkedIn.connectLinkedIn();
     const hubSpot = new HubSpot();
 
-    var ppl = await linkedIn.searchPeople("", {
+    var people = await linkedIn.searchPeople("", {
         title: "CTO",
         geoUrn: "101620260"
-    }, 10);
+    }, 30);
 
-    var a = 5;
+    //for(person of people) {
+        // await linkedIn.sendInvitationWithMessageById(
+        //     person.publicIdentifier, 
+        //     person.trackingId,
+        //     "Hi",
+        //     5) //skip
+
+       await linkedIn.sendInvitationWithMessageById(
+            people[25].publicIdentifier, 
+            people[25].trackingId,
+            "Hi " +  people[1].firstName + "," + msg)
+    //}
 }
 
 findPeopleAndConnect();
